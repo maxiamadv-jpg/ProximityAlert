@@ -1,0 +1,45 @@
+name: Build APKs
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unzip source
+        run: |
+          unzip -o ProximityAlert.zip -d extracted
+          cp -r extracted/ProximityAlert/* . 2>/dev/null || cp -r extracted/* .
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.4
+
+      - name: Build Phone APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :phone:assembleDebug
+
+      - name: Build Wear APK
+        run: ./gradlew :wear:assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phone-debug-apk
+          path: phone/build/outputs/apk/debug/*.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wear-debug-apk
+          path: wear/build/outputs/apk/debug/*.apk
