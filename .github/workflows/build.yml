@@ -38,12 +38,12 @@ jobs:
       - name: Build Wear APK
         run: ./gradlew :wear:assembleDebug
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: phone-debug-apk
           path: phone/build/outputs/apk/debug/*.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wear-debug-apk
           path: wear/build/outputs/apk/debug/*.apk
